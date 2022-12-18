@@ -1,3 +1,4 @@
+/*global chrome*/
 import * as React from "react";
 import Slider from "@mui/material/Slider";
 import { Button, Card } from "@mui/material";
@@ -38,6 +39,7 @@ export default function SelectPassword() {
   const [sliderValue, setSliderValue] = useState(0);
   const [password, setPassword] = useState("");
   const [arr, setArr] = useState([0, 0, 0, 0]);
+  const [url, setUrl] = useState("");
 
   const makeArr = (i) => {
     var arr2 = [...arr];
@@ -45,6 +47,27 @@ export default function SelectPassword() {
     setArr(arr2);
   };
 
+  useEffect(() => {
+    const queryInfo = { active: true, lastFocusedWindow: true };
+
+    chrome.tabs &&
+      chrome.tabs.query(queryInfo, (tabs) => {
+        const url = tabs[0].url;
+        setUrl(url);
+      });
+  }, []);
+  // function initPopupWindow() {
+  //   let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  //   if (tab?.url) {
+  //     try {
+  //       let url = new URL(tab.url);
+  //       input.value = url.hostname;
+  //     } catch {}
+  //   }
+
+  //   input.focus();
+  // }
   const passGenerator = ([u, l, n, s]) => {
     var password = "";
     var chars = u ? charsObj[0].char : "";
@@ -57,6 +80,13 @@ export default function SelectPassword() {
       password += chars.substring(randomNumber, randomNumber + 1);
     }
     setPassword(password);
+
+    //   let [tab] = chrome.tabs.query({ active: true, currentWindow: true });
+
+    //   if (tab?.url) {
+    //     let url = new URL(tab.url);
+    //     setUrl(url.hostname);
+    //   }
   };
 
   useEffect(() => {
@@ -112,9 +142,7 @@ export default function SelectPassword() {
 
         <Button
           variant="contained"
-          onClick={() =>
-            alert(`Password for ${window.location.href} is ${password}`)
-          }
+          onClick={() => alert(`Password for ${url} is ${password}`)}
         >
           Save
         </Button>
